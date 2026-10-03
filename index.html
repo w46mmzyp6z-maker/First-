@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0b10">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ReelScore">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+button,input,select{min-height:44px}
+.drop{min-height:110px;display:flex;flex-direction:column;justify-content:center}
+</style>
+<title>ReelScore — Instagram Reel Analyzer</title>
+<style>
+:root{--bg:#0b0b10;--card:#15151d;--muted:#9b9baa;--text:#f7f7fb;--line:#292934;--accent:#ff4f9a;--accent2:#7c5cff;--good:#47d18c;--warn:#ffc857;--bad:#ff647c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,#24152b,transparent 35%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif}
+.wrap{max-width:1050px;margin:auto;padding:28px 18px 60px}.hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+h1{font-size:38px;margin:0 0 6px}.sub{color:var(--muted);max-width:700px;line-height:1.5}.pill{display:inline-block;padding:7px 11px;border:1px solid var(--line);border-radius:999px;color:#ddd;font-size:12px}
+.card{background:rgba(21,21,29,.9);border:1px solid var(--line);border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 10px 35px #0004}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+label{display:block;font-size:13px;color:#c8c8d2;margin:0 0 7px}input,select{width:100%;background:#0e0e14;border:1px solid #30303b;color:#fff;padding:11px 12px;border-radius:10px;font-size:15px}
+button{border:0;border-radius:11px;padding:12px 17px;color:white;background:linear-gradient(90deg,var(--accent),var(--accent2));font-weight:700;cursor:pointer}
+.drop{border:1px dashed #4a4658;border-radius:14px;padding:24px;text-align:center;color:var(--muted);margin-top:12px}.drop input{display:none}.drop strong{color:#fff}
+.preview{display:none;width:100%;max-height:430px;object-fit:contain;border-radius:14px;margin-top:12px;background:#000}
+.results{display:none}.scorebox{display:flex;align-items:center;gap:24px}.score{font-size:74px;font-weight:900;line-height:1;background:linear-gradient(90deg,#ff4f9a,#7c5cff);-webkit-background-clip:text;color:transparent}
+.bar{height:9px;background:#292934;border-radius:99px;overflow:hidden}.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.metric{padding:15px;border:1px solid var(--line);border-radius:14px}.metric h3{margin:0 0 7px;font-size:15px}.metric .num{font-size:26px;font-weight:800}.small{font-size:12px;color:var(--muted);line-height:1.4}
+.issue{padding:13px 14px;border-left:3px solid var(--warn);background:#1b1a17;border-radius:8px;margin:9px 0}.issue b{display:block;margin-bottom:3px}
+.good{border-left-color:var(--good)}.bad{border-left-color:var(--bad)}
+footer{color:#777;font-size:12px;margin-top:22px;line-height:1.5}
+@media(max-width:720px){.grid,.grid3{grid-template-columns:1fr}.hero{display:block}.scorebox{align-items:flex-start}.score{font-size:60px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <span class="pill">MVP • Reel intelligence</span>
+      <h1>ReelScore ✨</h1>
+      <div class="sub">Analyze an Instagram Reel using measurable performance signals. Get a 0–100 optimization score, category diagnostics, and a prioritized action plan.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>1. Add your Reel</h2>
+    <div class="drop" onclick="document.getElementById('video').click()">
+      <strong>Tap to upload a Reel</strong><br>MP4 / MOV • processed locally in this prototype
+      <input id="video" type="file" accept="video/*">
+    </div>
+    <video id="preview" class="preview" controls></video>
+    <div id="videoInfo" class="small" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h2>2. Paste your Instagram Insights</h2>
+    <p class="small">Use the numbers from Instagram Insights for this Reel. Ratios are calculated automatically.</p>
+    <div class="grid">
+      <div><label>Plays / Views</label><input id="views" type="number" min="0" value="10000"></div>
+      <div><label>Reach / Accounts reached</label><input id="reach" type="number" min="0" value="7000"></div>
+      <div><label>Average watch time (seconds)</label><input id="avg" type="number" min="0" step=".1" value="7"></div>
+      <div><label>Reel duration (seconds)</label><input id="duration" type="number" min="1" step=".1" value="12"></div>
+      <div><label>Likes</label><input id="likes" type="number" min="0" value="500"></div>
+      <div><label>Comments</label><input id="comments" type="number" min="0" value="25"></div>
+      <div><label>Shares</label><input id="shares" type="number" min="0" value="180"></div>
+      <div><label>Saves</label><input id="saves" type="number" min="0" value="90"></div>
+      <div><label>New followers from this Reel</label><input id="follows" type="number" min="0" value="45"></div>
+      <div><label>Non-follower reach (%)</label><input id="nonfollowers" type="number" min="0" max="100" value="55"></div>
+    </div>
+    <div style="margin-top:16px"><button onclick="analyze()">Analyze Reel 🚀</button></div>
+  </div>
+
+  <div id="results" class="results">
+    <div class="card">
+      <div class="scorebox">
+        <div class="score" id="score">0</div>
+        <div><h2 id="verdict" style="margin:0 0 5px"></h2><div id="summary" class="sub"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Score breakdown</h2>
+      <div id="metrics" class="grid3"></div>
+    </div>
+
+    <div class="card">
+      <h2>Priority fixes 🎯</h2>
+      <div id="issues"></div>
+    </div>
+
+    <div class="card">
+      <h2>Calculated signals</h2>
+      <div id="signals" class="grid3"></div>
+    </div>
+
+    <footer>
+      This is an optimization score, not Instagram's private ranking score. Instagram uses multiple ranking systems and personalized predictions; this app approximates creator-facing signals from your available Reel Insights. It should be used for testing and comparison between your own Reels, not as a guarantee of reach.
+    </footer>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+$('video').addEventListener('change',e=>{
+ const f=e.target.files[0]; if(!f)return;
+ const v=$('preview'); v.src=URL.createObjectURL(f); v.style.display='block';
+ v.onloadedmetadata=()=>{ if(!$('duration').value || $('duration').value==='12') $('duration').value=v.duration.toFixed(1); $('videoInfo').textContent=`Detected: ${f.name} • ${v.duration.toFixed(1)}s`;
+ };
+});
+
+function n(id){return Math.max(0,Number($(id).value)||0)}
+function clamp(x,a=0,b=100){return Math.max(a,Math.min(b,x))}
+function pct(x){return (x*100).toFixed(1)+'%'}
+function metric(name,value,why){
+ return `<div class="metric"><h3>${name}</h3><div class="num">${Math.round(value)}/100</div><div class="bar"><div class="fill" style="width:${value}%"></div></div><div class="small" style="margin-top:7px">${why}</div></div>`
+}
+function analyze(){
+ const views=n('views'),reach=n('reach'),avg=n('avg'),dur=n('duration'),likes=n('likes'),comments=n('comments'),shares=n('shares'),saves=n('saves'),follows=n('follows'),nf=n('nonfollowers');
+ const retention=dur?clamp((avg/dur)*100):0;
+ const likeRate=views?likes/views:0, commentRate=views?comments/views:0, shareRate=views?shares/views:0, saveRate=views?saves/views:0, followRate=reach?follows/reach:0;
+ // Benchmarks are intentionally heuristic and should be calibrated against the creator's own history.
+ const engagement=clamp((likeRate/.06)*45+(commentRate/.004)*10+(shareRate/.015)*25+(saveRate/.01)*20);
+ const shareability=clamp((shareRate/.015)*100);
+ const saveability=clamp((saveRate/.01)*100);
+ const conversion=clamp((followRate/.01)*100);
+ const discovery=clamp((nf/70)*100);
+ const quality=clamp((retention*.55)+(discovery*.2)+(views&&reach?clamp(views/reach*35):0)*.25);
+ const hook=clamp(retention*1.15);
+ const score=Math.round(hook*.25+retention*.20+shareability*.18+saveability*.12+engagement*.12+conversion*.08+quality*.05);
+ $('score').textContent=score;
+ $('verdict').textContent=score>=80?'Strong candidate for scaling 🔥':score>=65?'Promising — optimize the weak spots 👀':score>=50?'Decent foundation — needs sharper packaging':'Needs a rethink before scaling 🛠️';
+ $('summary').textContent=`Your biggest leverage is in ${getWeak(hook,retention,shareability,saveability,engagement,conversion,quality)}.`;
+ $('metrics').innerHTML=
+ metric('Hook / Retention',hook,'Driven mainly by average watch time ÷ Reel duration.')+
+ metric('Watch-through',retention,'Average percentage of the Reel watched.')+
+ metric('Shareability',shareability,'Share rate is one of the strongest practical growth signals.')+
+ metric('Saveability',saveability,'Measures whether the Reel creates enough utility/value to save.')+
+ metric('Engagement',engagement,'Composite of likes, comments, shares and saves per view.')+
+ metric('Follow conversion',conversion,'New followers generated relative to reach.')+
+ metric('Discovery',discovery,'Uses non-follower reach as a proxy for recommendation/discovery.')+
+ metric('Content quality',quality,'Composite health indicator; not an Instagram-native score.');
+
+ const arr=[
+  [hook,'Hook / retention','If viewers drop early, rewrite the first 1–2 seconds. Start with the payoff, tension, or strongest visual.','bad'],
+  [shareability,'Shares','Add a “send this to your ___” moment only when it naturally fits; make the idea relatable or identity-driven.','bad'],
+  [saveability,'Saves','Turn advice into a checklist, mini-guide, template, before/after, or highly specific takeaway.','bad'],
+  [conversion,'Follower conversion','Give the viewer a reason to follow: a clear recurring series, promise, or distinctive point of view.','bad'],
+  [discovery,'Non-follower reach','Improve topic clarity, packaging and original value. Check Account Status and recommendation eligibility in Instagram.','bad'],
+  [engagement,'Engagement','Invite a specific opinion rather than “comment below”; make the question answerable in one sentence.','bad']
+ ].sort((a,b)=>a[0]-b[0]).slice(0,4);
+ $('issues').innerHTML=arr.map(x=>`<div class="issue ${x[0]>=70?'good':''}"><b>${x[1]} — ${Math.round(x[0])}/100</b>${x[2]}</div>`).join('');
+
+ $('signals').innerHTML=
+ `<div class="metric"><h3>Like rate</h3><div class="num">${pct(likeRate)}</div></div>`+
+ `<div class="metric"><h3>Share rate</h3><div class="num">${pct(shareRate)}</div></div>`+
+ `<div class="metric"><h3>Save rate</h3><div class="num">${pct(saveRate)}</div></div>`+
+ `<div class="metric"><h3>Comment rate</h3><div class="num">${pct(commentRate)}</div></div>`+
+ `<div class="metric"><h3>Follow conversion</h3><div class="num">${pct(followRate)}</div></div>`+
+ `<div class="metric"><h3>Views / reach</h3><div class="num">${reach?(views/reach).toFixed(2):'0.00'}×</div></div>`;
+ $('results').style.display='block';
+ window.scrollTo({top:$('results').offsetTop-10,behavior:'smooth'});
+}
+function getWeak(...xs){const names=['Hook','retention','shareability','saveability','engagement','follow conversion','content quality'];let i=xs.indexOf(Math.min(...xs));return names[i]}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
